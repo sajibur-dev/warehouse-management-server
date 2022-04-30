@@ -38,6 +38,26 @@ const run = async () => {
             const product = await productCollection.findOne(query);
             res.send(product);
         })
+
+        app.put('/products/:id',async(req,res)=>{
+            const id = req.params.id;
+            const updateData = req.body;
+            const filter = {_id:ObjectId(id)};
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    name:updateData.name,
+                    image:updateData.image,
+                    description:updateData.description,
+                    price:updateData.price,
+                    quantity:updateData.quantity,
+                    supplier:updateData.supplier,
+                    category:updateData.category
+                }
+              };
+              const result = await  productCollection.updateOne(filter,updateDoc,options);
+              res.send(result);
+        })
         
     } catch (error) {
         console.log(error);
