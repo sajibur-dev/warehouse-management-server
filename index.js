@@ -45,6 +45,7 @@ const run = async () => {
         await client.connect();
         const productCollection = client.db("warehouse").collection("product");
 
+        // auth api 
 
         app.post('/login',async(req,res,)=>{
             const user = req.body;
@@ -54,12 +55,24 @@ const run = async () => {
             res.send(token);
         })
 
+        // get all or page wise data 
+
         app.get('/products',async(req,res)=>{
+            const page = +req.query.page;
+            const size = +req.query.size;
+
             const query = {};
             const cursor = productCollection.find(query);
-            const products = await cursor.toArray();
-            res.send(products)
+            const products = page || size ? await cursor.skip(page * size).limit(size).toArray() : await cursor.toArray();
+            res.send(products);
+        });
+
+        app.get('/productCount',async(req,res)=>{
+            const count = await productCollection.estimatedDocumentCount();
+            res.send({count})
         })
+
+        // get specific data 
 
         app.get('/products/:id',async(req,res)=>{
             const id = req.params.id;
@@ -69,6 +82,7 @@ const run = async () => {
         });
 
 
+        // get specific user's data 
 
         app.get('/myitems',verifyJWT,async(req,res)=>{
             const decodedEmail = req.decoded.email
@@ -84,7 +98,7 @@ const run = async () => {
         })
 
 
-
+        // insert single to product Collection
 
         app.post('/products',async(req,res)=>{
             const products = req.body;
@@ -92,6 +106,8 @@ const run = async () => {
             res.send(result)
         });
 
+
+        // edit spefic data 
 
         app.put('/products/:id',async(req,res)=>{
             const id = req.params.id;
@@ -114,6 +130,8 @@ const run = async () => {
         });
 
 
+        // delete spefic data 
+
         app.delete('/products/:id',async(req,res) => {
             const id = req.params.id;
             const query = {_id:ObjectId(id)};
@@ -135,5 +153,5 @@ app.get('/',(req,res)=>{
     res.send('warehouse management system is running')
 })
 
-app.listen(port,()=>console.log('server is running'));
+app.listen(port,()=>console.log('server is running',port));
 
