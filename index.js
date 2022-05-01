@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
@@ -25,6 +26,15 @@ const run = async () => {
         await client.connect();
         const productCollection = client.db("warehouse").collection("product");
 
+
+        app.post('/login',async(req,res,)=>{
+            const user = req.body;
+            const token = jwt.sign(user,process.env.SECURE_ACCESS_TOKEN,{
+                expiresIn:'1d'
+            });
+            res.send(token);
+        })
+
         app.get('/products',async(req,res)=>{
             const query = {};
             const cursor = productCollection.find(query);
@@ -37,13 +47,24 @@ const run = async () => {
             const query = {_id:ObjectId(id)};
             const product = await productCollection.findOne(query);
             res.send(product);
+        });
+
+        app.get('/myitems',async(req,res)=>{
+            const email = req.query.email;
+            
+            const query = {email:email};
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products)
+
         })
 
         app.post('/products',async(req,res)=>{
             const products = req.body;
             const result = await productCollection.insertOne(products);
             res.send(result)
-        })
+        });
+
 
         app.put('/products/:id',async(req,res)=>{
             const id = req.params.id;
