@@ -15,6 +15,25 @@ app.use(express.json());
 
 
 
+// jwt verify : 
+
+function verifyJWT(req,res,next){
+    const authorization = req.headers.authorization;
+    if(!authorization){
+        return res.status(401).send({message:'unauthorize access'})
+    }
+
+    const token = authorization.split(' ')[1];
+    jwt.verify(token,process.env.SECURE_ACCESS_TOKEN,(err,decoded)=>{
+        if(err){
+            return res.status(403).send({message:"forbidden"});
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
+
 // connected to database : 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_USER_PASSWORD}@cluster0.9gh47.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -49,15 +68,23 @@ const run = async () => {
             res.send(product);
         });
 
-        app.get('/myitems',async(req,res)=>{
+
+
+        app.get('/myitems',verifyJWT,async(req,res)=>{
+            const decodedEmail = req.decoded.email
             const email = req.query.email;
-            
+            if(decodedEmail === email){
+
             const query = {email:email};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products)
+            }
 
         })
+
+
+
 
         app.post('/products',async(req,res)=>{
             const products = req.body;
