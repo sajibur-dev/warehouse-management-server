@@ -44,6 +44,7 @@ const run = async () => {
     try {
         await client.connect();
         const productCollection = client.db("warehouse").collection("product");
+        const servicesCollection = client.db("warehouse").collection("service"); 
 
         // auth api 
 
@@ -97,7 +98,14 @@ const run = async () => {
 
         })
 
+        // get services collection : 
 
+        app.get('/services',async(req,res)=>{
+            const query = {};
+            const cursor = servicesCollection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
+        })
         // insert single to product Collection
 
         app.post('/products',async(req,res)=>{
