@@ -56,34 +56,7 @@ const run = async () => {
             res.send(token);
         })
 
-        // get all or page wise data 
-
-        app.get('/products',async(req,res)=>{
-            const page = +req.query.page;
-            const size = +req.query.size;
-
-            const query = {};
-            const cursor = productCollection.find(query);
-            const products = page || size ? await cursor.skip(page * size).limit(size).toArray() : await cursor.toArray();
-            res.send(products);
-        });
-
-        app.get('/productCount',async(req,res)=>{
-            const count = await productCollection.estimatedDocumentCount();
-            res.send({count})
-        })
-
-        // get specific data 
-
-        app.get('/products/:id',async(req,res)=>{
-            const id = req.params.id;
-            const query = {_id:ObjectId(id)};
-            const product = await productCollection.findOne(query);
-            res.send(product);
-        });
-
-
-        // get specific user's data 
+        // load data according to user 
 
         app.get('/myitems',verifyJWT,async(req,res)=>{
             const decodedEmail = req.decoded.email
@@ -99,6 +72,16 @@ const run = async () => {
             }
         })
 
+        // get specific data 
+
+
+        app.get('/products/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id:ObjectId(id)};
+            const product = await productCollection.findOne(query);
+            res.send(product);
+        });
+       
         // get services collection : 
 
         app.get('/services',async(req,res)=>{
