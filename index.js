@@ -88,14 +88,15 @@ const run = async () => {
         app.get('/myitems',verifyJWT,async(req,res)=>{
             const decodedEmail = req.decoded.email
             const email = req.query.email;
+            const page = +req.query.page;
+            const size = +req.query.size;
+
             if(decodedEmail === email){
-
-            const query = {email:email};
-            const cursor = productCollection.find(query);
-            const products = await cursor.toArray();
-            res.send(products)
+                const query = {email:email};
+                const cursor = productCollection.find(query);
+                const products = page || size ? await cursor.skip(page * size).limit(size).toArray() : await cursor.toArray();
+                res.send(products)
             }
-
         })
 
         // get services collection : 
@@ -105,7 +106,8 @@ const run = async () => {
             const cursor = servicesCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
-        })
+        });
+
         // insert single to product Collection
 
         app.post('/products',async(req,res)=>{
