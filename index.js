@@ -45,6 +45,7 @@ const run = async () => {
         await client.connect();
         const productCollection = client.db("warehouse").collection("product");
         const servicesCollection = client.db("warehouse").collection("service"); 
+        const reviewsCollection = client.db("warehouse").collection("review");
 
         // auth api 
 
@@ -90,6 +91,15 @@ const run = async () => {
             const services = await cursor.toArray();
             res.send(services);
         });
+
+        // get client's review : 
+
+        app.get('/reviews',async(req,res) =>{
+            const query = {};
+            const cursor = reviewsCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
 
         // insert single to product Collection
 
