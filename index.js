@@ -107,7 +107,9 @@ const run = async () => {
             const email = req.query.email;
             const query = {email:email};
             const review = await reviewsCollection.findOne(query);
-            res.send(review)
+            const response = review === null ?{ message:`data doesn't exist`} : review
+            
+            res.send(response)
         })
 
         // insert single to product Collection
