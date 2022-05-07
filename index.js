@@ -109,6 +109,14 @@ const run = async () => {
             res.send(result)
         });
 
+        // insert single  data to reviews collection : 
+
+        app.post('/reviews',async(req,res)=>{
+            const reviews = req.body;
+            const result = await reviewsCollection.insertOne(reviews);
+            res.send(result)
+        })
+
 
         // edit spefic data 
 
