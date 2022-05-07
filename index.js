@@ -99,6 +99,15 @@ const run = async () => {
             const cursor = reviewsCollection.find(query);
             const reviews = await cursor.toArray();
             res.send(reviews);
+        });
+
+        // get specific review : 
+
+        app.get('/review',async(req,res)=>{
+            const email = req.query.email;
+            const query = {email:email};
+            const review = await reviewsCollection.findOne(query);
+            res.send(review)
         })
 
         // insert single to product Collection
