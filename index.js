@@ -55,6 +55,12 @@ const run = async () => {
                 expiresIn:'30d'
             });
             res.send(token);
+        });
+
+
+        app.get('/products',async(req,res)=>{
+            const products = await productCollection.find().toArray();
+            res.send(products)
         })
 
         // load data according to user 
