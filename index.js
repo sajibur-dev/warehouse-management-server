@@ -178,7 +178,7 @@ run();
 
 
 app.get('/',(req,res)=>{
-    res.send('warehouse management system is running')
+    res.send('warehouse management system is runnings')
 })
 
 app.listen(port,()=>console.log('server is running',port));
